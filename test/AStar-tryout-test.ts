@@ -16,7 +16,12 @@ module AStarTest {
     heuristic(goal: City) { // ignores the argument
       return this.h;
     }
-    toNumber() {
+    // Unused (dummy) function in this testimplemenation since we give the graph
+    // to the search function and dont expand it
+    expand() {
+      return [];
+    }
+    hash() {
       return A.AS.hash(this.name) + this.h;
     }
     constructor(name: string, h: number) {
@@ -74,7 +79,7 @@ module AStarTest {
     var aradn: A.AS.ANode<City> = graph.get(A.AS.key(arad, 0));
     describe('heuristic', () => {
       it('path should be: Arad -> Sibiu -> Rimnicu -> Pitesti -> Bucharest', (done) => {
-        var path: City[] = A.AS.search(aradn, bucharest, graph);
+        var path: City[] = A.AS.searchGraph(aradn, bucharest, graph);
         expect(path[0].name).to.equals("Arad");
         expect(path[1].name).to.equals("Sibiu");
         expect(path[2].name).to.equals("Rimnicu");
