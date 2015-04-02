@@ -44,21 +44,26 @@ module AStarTest2 {
    * Cities                         name         g    h
    */
   var arad              = new City( "Arad",      0,   366 );
-  var sibiu_arad        = new City( "Arad",      280, 366 );
-  var rimnicu_sibiu     = new City( "Sibiu",     300, 253 );
-  var fagaras_sibiu     = new City( "Sibiu",     338, 253 );
+
   var arad_sibiu        = new City( "Sibiu",     140, 253 );
   var arad_timisoara    = new City( "Timisoara", 118, 329 );
   var arad_zerind       = new City( "Zerind",    75,  374 );
+
+  var sibiu_arad        = new City( "Arad",      280, 366 );
   var sibiu_fagaras     = new City( "Fagaras",   239, 176 );
   var sibiu_oradea      = new City( "Oradea",    291, 380 );
-  var pitesti_rimnicu   = new City( "Rimnicu",   414, 193 );
   var sibiu_rimnicu     = new City( "Rimnicu",   220, 193 );
-  var pitesti_craiova   = new City( "Craiova",   455, 160 );
+
+  var fagaras_sibiu     = new City( "Sibiu",     338, 253 );
+  var fagaras_bucharest = new City( "Bucharest", 450, 0   );
+
   var rimnicu_craiova   = new City( "Craiova",   366, 160 );
   var rimnicu_pitesti   = new City( "Pitesti",   317, 100 );
+  var rimnicu_sibiu     = new City( "Sibiu",     300, 253 );
+
   var pitesti_bucharest = new City( "Bucharest", 418, 0   );
-  var fagaras_bucharest = new City( "Bucharest", 450, 0   );
+  var pitesti_craiova   = new City( "Craiova",   455, 160 );
+  var pitesti_rimnicu   = new City( "Rimnicu",   414, 193 );
 
   map['Pitesti'] = [pitesti_bucharest, pitesti_craiova, pitesti_rimnicu];
   map['Rimnicu'] = [rimnicu_craiova, rimnicu_pitesti, rimnicu_sibiu];

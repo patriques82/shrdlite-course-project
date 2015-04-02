@@ -37,9 +37,10 @@ export module AS { // AStar
    */
   export function search<T extends Heuristic>(start: T,
                                               goal: T): T[] {
-    var frontier = new C.collections.PriorityQueue<ASNode<T>>(compClosure(start, goal));
-    frontier.enqueue(new ASNode(start, null));
-    var graph = new ASGraph<T>();
+    var frontier = new C.collections.PriorityQueue<ASNode<T>>(compClosure(goal));
+    var startNode = new ASNode(start, null);
+    frontier.enqueue(startNode);
+    var graph = new ASGraph<T>(startNode);
 
     while(!frontier.isEmpty()) {
       var current : ASNode<T> = frontier.dequeue();
@@ -55,7 +56,6 @@ export module AS { // AStar
         frontier.enqueue(neighbour);
       }
     }
-    throw "Unexpandable state not belonging to any goal state found!"
   };
 
   //////////////////////////////////////////////////////////////////////
@@ -78,7 +78,6 @@ export module AS { // AStar
   class ASGraph<T extends Heuristic> {
     table: HashTable<T>;
     set(node: ASNode<T>): ASNode<T> {
-      // var k = key(node.state, node.cost);
       var hash = node.state.hash();
       this.table[hash] = node;
       return node;
@@ -86,12 +85,13 @@ export module AS { // AStar
     get(k: number): ASNode<T> {
       return this.table[k];
     }
-    constructor() {
+    constructor(node: ASNode<T>) {
       this.table = [];
+      this.set(node);
     }
   }
 
-  function compClosure<T extends Heuristic>(start: T, goal: T) {
+  function compClosure<T extends Heuristic>(goal: T) {
     /*
      * Comparing function
      */
