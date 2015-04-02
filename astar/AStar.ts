@@ -37,10 +37,10 @@ export module AS { // AStar
    */
   export function search<T extends Heuristic>(start: T,
                                               goal: T): T[] {
-    var frontier = new C.collections.PriorityQueue<ASNode<T>>(compClosure(goal));
     var startNode = new ASNode(start, null);
-    frontier.enqueue(startNode);
     var graph = new ASGraph<T>(startNode);
+    var frontier = new C.collections.PriorityQueue<ASNode<T>>(compClosure(goal));
+    frontier.enqueue(startNode);
 
     while(!frontier.isEmpty()) {
       var current : ASNode<T> = frontier.dequeue();
@@ -56,7 +56,7 @@ export module AS { // AStar
         frontier.enqueue(neighbour);
       }
     }
-  };
+  }
 
   //////////////////////////////////////////////////////////////////////
   // private classes and functions

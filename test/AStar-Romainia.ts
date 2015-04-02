@@ -8,7 +8,7 @@ import A = require('../astar/AStar');
 
 import chai = require('chai');
 
-module AStarTest2 {
+module AStarRomania {
 
   var map = [];
 
@@ -73,8 +73,8 @@ module AStarTest2 {
 
   var expect = chai.expect;
 
-  describe('AStar', () => {
-    describe('heuristic', () => {
+  describe('Romania map', () => {
+    describe('Shortest path from Arad to Bucharest', () => {
       it('path should be: Arad -> Sibiu -> Rimnicu -> Pitesti -> Bucharest', (done) => {
         var path: City[] = A.AS.search(arad, pitesti_bucharest);
         expect(path[0].name).to.equals("Arad");
