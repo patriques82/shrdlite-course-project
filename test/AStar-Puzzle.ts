@@ -231,6 +231,8 @@ module AStarPuzzle {
         var start = new PuzzleState(puzzle, 0);
         var end = new PuzzleState(solution, null);
         var path: PuzzleState[] = A.AS.search<PuzzleState>(start, end);
+        // for(var i=0; i<path.length; i++) // to see the path (26 steps)
+        //   console.log(path[i].puzzle);
         var last = path.pop();
         var foundSol = last.match(end); // do the last step on path match solution?
         expect(foundSol).to.equals(true);
