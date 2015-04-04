@@ -13,23 +13,24 @@ module AStarPuzzle {
     g: number;
 
     // Manhattan distance (admissible heuristic)
-    heuristic(goal: PuzzleState) {
+    heuristic(goal: PuzzleState): number {
       var sum = 0;
       for (var i = 0; i < 3; i++) {
         for (var j = 0; j < 3; j++) {
           // dont count distance of empyty cell (0)
-          if(goal.puzzle[i][j] !== this.puzzle[i][j] && goal.puzzle[i][j] !== 0)
+          if(goal.puzzle[i][j] !== this.puzzle[i][j] &&
+             goal.puzzle[i][j] !== 0)
             sum += manhattanDistance(goal.puzzle[i][j], this.puzzle, j, i);
         }
       }
       return sum;
     }
 
-    cost() {
+    cost(): number {
       return this.g;
     }
 
-    match(goal: PuzzleState) {
+    match(goal: PuzzleState): boolean {
       for (var i = 0; i < 3; i++) {
         for (var j = 0; j < 3; j++) {
           if(goal.puzzle[i][j] !== this.puzzle[i][j])
@@ -41,21 +42,27 @@ module AStarPuzzle {
 
     expand(): PuzzleState[] {
       var index = emptyCell(this.puzzle);
-      var x = index[0];
-      var y = index[1];
       var states = [];
-      if(x && y) { // empty cell found
-        var puzzles = validPuzzles(this.puzzle, x, y);
+      if(index.length === 2) { // empty cell found
+        var puzzles = validPuzzles(this.puzzle, index[0], index[1]);
         for(var i=0; i<puzzles.length; i++) {
-          if(puzzles[i])
-            states.push(new PuzzleState(puzzles[i], this.cost() + 1));
+          states.push(new PuzzleState(puzzles[i], this.cost() + 1));
         }
       }
       return states;
     }
 
-    hash() {
-      return 0;
+    hash(): number {
+      // var hash = 0;
+      var hash = "";
+      for (var i = 0; i < 3; i++) {
+        for (var j = 0; j < 3; j++) {
+          // hopefully a unique hash
+          // hash += (this.puzzle[i][j] + 11) * 13 * ((i+1) * 17 + (j+1) * 19);
+          hash += this.puzzle[i][j].toString();
+        }
+      }
+      return parseInt(hash, 10);
     }
 
     constructor(state: number[][], cost: number) {
@@ -106,10 +113,14 @@ module AStarPuzzle {
 
   function validPuzzles(puzzle: number[][], x: number, y: number): number[][][] {
     var puzzles = [];
-    puzzles.push(swapTile(puzzle, x, y, x+1, y)); // left
-    puzzles.push(swapTile(puzzle, x, y, x, y-1)); // up
-    puzzles.push(swapTile(puzzle, x, y, x-1, y)); // right
-    puzzles.push(swapTile(puzzle, x, y, x, y+1)); // down
+    var left  = swapTile(puzzle, x, y, x+1, y); // left
+    var up    = swapTile(puzzle, x, y, x, y-1); // up
+    var right = swapTile(puzzle, x, y, x-1, y); // right
+    var down  = swapTile(puzzle, x, y, x, y+1); // down
+    left  ? puzzles.push(left)  : 0;
+    up    ? puzzles.push(up)    : 0;
+    right ? puzzles.push(right) : 0;
+    down  ? puzzles.push(down)  : 0;
     return puzzles;
   }
 
@@ -165,7 +176,7 @@ module AStarPuzzle {
         done();
       });
 
-      it('validPuzzles should give 4 states empty cell is in center', (done) => {
+      it('validPuzzles should give 4 states if empty cell is in center', (done) => {
         var puzzle = [[7, 2, 4], [5, 0, 6], [8, 3, 1]];
         var puzzles = validPuzzles(puzzle, 1, 1);
         expect(puzzles[0][1][2]).to.equals(0); // left
@@ -186,18 +197,43 @@ module AStarPuzzle {
         expect(distance).to.equals(18); // example from slides
         done();
       });
+
+      it('match should return true when puzzles match', (done) => {
+        var puzzle1 = [[7, 2, 4], [5, 0, 6], [8, 3, 1]];
+        var puzzle2 = [[7, 2, 4], [5, 0, 6], [8, 1, 3]];
+        var orig  = new PuzzleState(puzzle1, 0);
+        var orig2 = new PuzzleState(puzzle1, 9999);
+        var comp  = new PuzzleState(puzzle2, 0);
+        var test1 = orig.match(comp);
+        var test2 = orig.match(orig);
+        expect(test1).to.equals(false);
+        expect(test2).to.equals(true);
+        done();
+      });
+
+      it('expand should return correct puzzle states', (done) => {
+        var puzzle = [[0, 2, 4], [5, 7, 6], [8, 3, 1]];
+        var orig  = new PuzzleState(puzzle, 0);
+        var states = orig.expand();
+        expect(states.length).to.equals(2);
+        expect(states[0].puzzle[0][1]).to.equals(0); // left
+        expect(states[1].puzzle[1][0]).to.equals(0); // up
+        expect(states[0].cost()).to.equals(1); // left
+        expect(states[1].cost()).to.equals(1); // up
+        done();
+      });
     });
 
     describe('AStar', () => {
       it('search should return the minimum steps to reach solution', (done) => {
-        // var puzzle = [[7, 2, 4], [5, 0, 6], [8, 3, 1]];
-        var puzzle = [[1, 0, 2], [3, 4, 5], [6, 7, 8]];
+        var puzzle = [[7, 2, 4], [5, 0, 6], [8, 3, 1]]; // example from slides
         var solution = [[0, 1, 2], [3, 4, 5], [6, 7, 8]];
         var start = new PuzzleState(puzzle, 0);
         var end = new PuzzleState(solution, null);
-        var path: PuzzleState[] = A.AS.search(start, end);
-        console.log(path);
-        // expect(distance).to.equals(18); // example from slides
+        var path: PuzzleState[] = A.AS.search<PuzzleState>(start, end);
+        var last = path.pop();
+        var foundSol = last.match(end); // do the last step on path match solution?
+        expect(foundSol).to.equals(true);
         done();
       });
     });

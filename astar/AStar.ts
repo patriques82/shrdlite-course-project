@@ -21,19 +21,13 @@ export module AS { // AStar
     for (var i = 0; i < s.length; i++) {
       var chr = s.charCodeAt(i);
       hash = ((hash << 5) - hash) + chr;
-      hash |= 0; // Convert to 32bit integer
+      hash = hash & hash; // Convert to 32bit integer
     }
     return hash;
   }
 
   /*
-   * AStar simple implementation. Requires an implementation of Heuristic and ANode.
-   * TODO: Cycle checking: Keep record of visited nodes for termination and dont
-   * expand (add to PQ if they are already visited)
-   * TODO: Multiple path pruning: Keep redord of paths to visitied nodes and their
-   * cost. If a new path is cheaper exchange the old path with the new one.
-   * TODO: If h satisfies the monotone restriction (h(m) - h(n) < cost(m, n))
-   * then, A* with multiple path pruning always finds the shortest path to a goal.
+   * AStar simple implementation. Requires an implementation of Heuristic
    */
   export function search<T extends Heuristic>(start: T,
                                               goal: T): T[] {
@@ -52,8 +46,15 @@ export module AS { // AStar
       for(var i=0; i<neighbourStates.length; i++) { // for all neighbours
         neighbour = new ASNode(neighbourStates[i],
                                current)
-        graph.set(neighbour);
-        frontier.enqueue(neighbour);
+        // Multiple path pruning:
+        // If a new path is cheaper exchange the old path with the new one.
+        var k = neighbour.state.hash();
+        var found = graph.get(k);
+        var c = neighbour.state.cost();
+        if(found === undefined || found.state.cost() > c) {
+          graph.set(neighbour);
+          frontier.enqueue(neighbour);
+        }
       }
     }
   }
@@ -63,7 +64,7 @@ export module AS { // AStar
 
   class ASNode<T extends Heuristic> {
     state: T;
-    prev: number;         // (id of node) just one node enables a walk back to start to return the path.
+    prev: number; // (id of node) just one node enables a walk back.
     constructor(state: T, prev: ASNode<T>) {
       this.state = state;
       if(prev)
