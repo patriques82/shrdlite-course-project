@@ -52,17 +52,17 @@ module AStarPuzzle {
       return states;
     }
 
+    // hash is a 9 digit key for each unique puzzle state
     hash(): number {
-      // var hash = 0;
-      var hash = "";
+      var hash = 0;
+      var base = 1;
       for (var i = 0; i < 3; i++) {
         for (var j = 0; j < 3; j++) {
-          // hopefully a unique hash
-          // hash += (this.puzzle[i][j] + 11) * 13 * ((i+1) * 17 + (j+1) * 19);
-          hash += this.puzzle[i][j].toString();
+          hash += this.puzzle[i][j] * base;
+          base *= 10;
         }
       }
-      return parseInt(hash, 10);
+      return hash;
     }
 
     constructor(state: number[][], cost: number) {
