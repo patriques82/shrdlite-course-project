@@ -130,7 +130,6 @@ export module AStarEuclidian {
     return puzzles;
   }
 
-  // function copy(puzzle: number[][]): number[][] {
   function copy(puzzle: number[][]): number[][] {
     var copy = [];
     for(var i=0; i<puzzle.length; ++i) {
