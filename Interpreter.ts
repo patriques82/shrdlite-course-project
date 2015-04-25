@@ -46,9 +46,14 @@ module Interpreter {
     //////////////////////////////////////////////////////////////////////
     // private functions
 
+    function printLog(log : Object) : void {
+        document.getElementById('log').innerHTML += JSON.stringify(log) + "<br/>";
+    }
+
     function interpretCommand(cmd : Parser.Command, state : WorldState) : Literal[][] {
         // This returns a dummy interpretation involving two random objects in the world
         var objs : string[] = Array.prototype.concat.apply([], state.stacks);
+        printLog(state);
         var a = objs[getRandomInt(objs.length)];
         var b = objs[getRandomInt(objs.length)];
         var intprt : Literal[][] = [[
